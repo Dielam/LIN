@@ -23,4 +23,6 @@ cat /proc/modlist
 #Limpiamos
 make clean
 #Sacamos el modulo
+dmesg
 sudo rmmod modlist
+
