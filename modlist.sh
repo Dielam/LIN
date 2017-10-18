@@ -23,6 +23,7 @@ cat /proc/modlist
 #Limpiamos
 make clean
 #Sacamos el modulo
-dmesg
 sudo rmmod modlist
+#Mostramos log del kernel
+dmesg
 
