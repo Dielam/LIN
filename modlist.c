@@ -11,7 +11,7 @@
 
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("modlist Kernel Module - FDI-UCM");
-MODULE_AUTHOR("Juan Carlos Saez");
+MODULE_AUTHOR("Francisco Denis y Diego Laguna");
 #define MAX_CHARS 100
 #define BUFFER_LENGTH       PAGE_SIZE
 
@@ -85,7 +85,7 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
   	char palabra[100];
   	strcpy(palabra,kbuf);
   	if (strcmp(palabra, "cleanup")==1) cleanup();
-  	else trace_printk("Comando invalido");	
+  	else trace_printk("Unknown command");	
   }
   
 //(*off)+=len;            /* Update the file pointer */
@@ -96,33 +96,33 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
 static ssize_t modlist_read(struct file *filp, char __user *buf, size_t len, loff_t *off) {
 
   char kbuf[MAX_CHARS];
-  int nr_bytes;
+  int nr_bytes = 0;
   struct list_head* cur_node=NULL;
   list_item_t* item=NULL;
 
+  if ((*off) > 0)  //Tell the application that there is nothing left to read 
+      return 0;  
+
+
   list_for_each(cur_node,&mylist){
 	item = list_entry(cur_node,list_item_t, links);
-	nr_bytes=sprintf(kbuf[nr_bytes],"%d\n",item->data);
-	trace_printk(kbuf);
+	sprintf(&kbuf[nr_bytes],"%d\n",item->data);
+	nr_bytes = strlen(kbuf);
+	trace_printk("%s",kbuf);
   }
-  kbuf[nr_bytes]="\0";
-  
-  /* if ((*off) > 0)  Tell the application that there is nothing left to read 
-      return 0; */
+
     
-  //nr_bytes=strlen(modlist);
-    
-  /*if (len<nr_bytes)
-    return -ENOSPC; */
+  if (len<nr_bytes)
+    return -ENOSPC;
   
     /* Transfer data from the kernel to userspace */  
 
 
-  if (copy_to_user(buf, modlist,nr_bytes))
+  if (copy_to_user(buf, kbuf,nr_bytes))
     return -EINVAL;
     
 
-  //(*off)+=len;  /* Update the file pointer */
+ (*off)+=len;  /* Update the file pointer */
 
   return nr_bytes; 
 }
@@ -137,8 +137,7 @@ static const struct file_operations proc_entry_fops = {
 int init_modlist_module( void )
 {
   INIT_LIST_HEAD(&mylist);
-  int ret;
-  ret = 0;
+  int ret = 0;
   modlist = (char *)vmalloc( BUFFER_LENGTH );
 
   if (!modlist) {
@@ -162,8 +161,11 @@ int init_modlist_module( void )
 
 
 void exit_modlist_module( void )
-{
-  
+{	
+  if(!list_empty(&mylist)){
+	cleanup();
+	printk(KERN_INFO "Calling cleanup() before exit...\n");
+  }	
   remove_proc_entry("modlist", NULL);
   vfree(modlist);
   printk(KERN_INFO "modlist: Module unloaded.\n");

@@ -1,4 +1,5 @@
 #! /bin/bash
+#Autores: Francisco Denis y Diego Laguna
 #Intalar Ftrace
 #Entramos en el directorio
 cd Documentos/P1/modlist
@@ -17,7 +18,9 @@ echo add 19 > /proc/modlist
 cat /proc/modlist
 echo remove 1 > /proc/modlist
 cat /proc/modlist
-echo cleanup > /proc/modlist
+#echo cleanup > /proc/modlist
 cat /proc/modlist
+#Limpiamos
+make clean
 #Sacamos el modulo
 sudo rmmod modlist
