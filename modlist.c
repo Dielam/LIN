@@ -84,8 +84,8 @@ static ssize_t modlist_write(struct file *filp, const char __user *buf, size_t l
   else {
   	char palabra[100];
   	strcpy(palabra,kbuf);
-  	if (strcmp(palabra, "cleanup")==1) cleanup();
-  	else trace_printk("Unknown command");	
+  	if (strcmp(palabra, "cleanup\n")==0) cleanup();
+  	else printk("Unknown command");	
   }
   
 //(*off)+=len;            /* Update the file pointer */

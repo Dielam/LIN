@@ -25,5 +25,5 @@ make clean
 #Sacamos el modulo
 sudo rmmod modlist
 #Mostramos log del kernel
-dmesg
+dmesg | tail
 
