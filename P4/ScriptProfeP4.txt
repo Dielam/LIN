@@ -1,0 +1,4 @@
+1)Crear task struct
+2)E.Direcciones(hijo)
+	2.1)Crear tabla paginas
+	2.1)Copia E.Direcciones(PAdre)

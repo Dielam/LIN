@@ -1,0 +1,2 @@
+for file in .*; do  if [ $file == ".." ] || [ $file == "." ]; then print "uuuu"; else du -hs $file; fi; done
+
